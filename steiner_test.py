@@ -1,4 +1,5 @@
 from simulated_annealing import SimulatedAnnealingSteiner
+import random
 
 def make_simple_graph(n, w):
      return [(a, b, w) for a in range(n) for b in range(n) if a < b]
