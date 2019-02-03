@@ -24,7 +24,7 @@ class SimulatedAnnealingSteiner:
             current_similar = self.trim(self.find_new_similar())
             fitness_similar = self.fitness(current_similar)
             if fitness_similar < self.current_fitness:
-                self.current_fitness = current_similar
+                self.current_best = current_similar
                 self.current_fitness = fitness_similar
             self.iterations += 1
         
