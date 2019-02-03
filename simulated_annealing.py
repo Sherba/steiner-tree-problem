@@ -1,8 +1,7 @@
 import random
-from copy import deepcopy
 from collections import deque
 
-class Steiner:
+class SimulatedAnnealingSteiner:
     def __init__(self, graph, steiner_nodes):
         self.graph = graph  # e.g. [(node1, node2, weight), ...]
         self.steiner_nodes = steiner_nodes
@@ -11,14 +10,14 @@ class Steiner:
 
         # metadata:
         self.iterations = 0
-        self.iterations_limit = 1000
+        self.iterations_limit = 100
         self.initial_tree_size = 3
 
     def simulated_annealing(self):
         self.initialize()
 
         while not self.condition():
-            current_similar = self.find_new_similar()
+            current_similar = self.trim(self.find_new_similar())
             fitness_similar = self.fitness(current_similar)
             if fitness_similar < self.current_fitness:
                 self.current_fitness = current_similar
@@ -97,7 +96,7 @@ class Steiner:
             if self.has_cycle(initial_tree):
                 initial_tree = [x for x in initial_tree if x != new_vertex]
         
-        return initial_tree
+        return self.trim(initial_tree)
 
     def take_random_vertex(self, used_nodes):
         neighbours = self.neighbours(used_nodes)
@@ -112,7 +111,7 @@ class Steiner:
             
     # finds similar to current best
     def find_new_similar(self):
-        old_tree = deepcopy(self.current_best)
+        old_tree = [vertex for vertex in self.current_best]
         victim_vertex = random.choice(old_tree)
 
         node1 = victim_vertex[0]
@@ -158,10 +157,47 @@ class Steiner:
     def fitness(self, tree):
         return sum(weight for _, _, weight in tree)
 
+    def trim(self, tree):
+        new_tree = [vertex for vertex in tree]
+        while True:
+            node_dict = {}
+            for vertex in new_tree:
+                node1 = vertex[0]
+                node2 = vertex[1]
+
+                if node1 in node_dict:
+                    node_dict[node1] += 1
+                else:
+                    node_dict[node1] = 1
+
+                if node2 in node_dict:
+                    node_dict[node2] += 1
+                else:
+                    node_dict[node2] = 1
+            
+            excess_vertexes = [
+                vertex for vertex in new_tree 
+                    if (node_dict[vertex[0]] == 1 and vertex[0] not in self.steiner_nodes) 
+                        or (node_dict[vertex[1]] == 1 and vertex[1] not in self.steiner_nodes)
+            ]
+            if len(excess_vertexes) == 0:
+                break
+
+            new_tree = [vertex for vertex in tree if vertex not in excess_vertexes]
+        
+        return new_tree
+
+            
 
 if __name__ == "__main__":
-    graph = [(a, b, 1) for a in range(15) for b in range(15) if a != b]
+    graph = [(a, b, 1) for a in range(15) for b in range(15) if a < b]
     st = [1, 2, 4, 6, 8]
-    solver = Steiner(graph, st)
+    solver = SimulatedAnnealingSteiner(graph, st)
     print("Steiner tree:")
     print(solver.simulated_annealing())
+
+    # test_g = [(1,2,3), (2,3,4), (2,4,4), (1,5,3)]
+    # st = [1,3]
+
+    # t = SimulatedAnnealingSteiner(test_g, st)
+    # print(t.trim(test_g))
