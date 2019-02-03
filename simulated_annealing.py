@@ -26,10 +26,17 @@ class SimulatedAnnealingSteiner:
             if fitness_similar < self.current_fitness:
                 self.current_best = current_similar
                 self.current_fitness = fitness_similar
+            elif self.iterations > 1:
+                p = 1.0 / pow(self.iterations, 0.5)
+                q = random.random()
+                if p > q:
+                    self.current_best = current_similar
+                    self.current_fitness = fitness_similar
+
             self.iterations += 1
-        
-        return self.current_best, self.current_fitness 
-    
+
+        return self.current_best, self.current_fitness
+
     def is_valid(self, tree):
         ''' Checks if given tree is valid.
 
@@ -55,10 +62,10 @@ class SimulatedAnnealingSteiner:
         while len(queue) > 0:
             node = queue.popleft()
             if node in marked:
-                return True 
+                return True
 
             neighbours = [neighbour for neighbour in tree if neighbour[0] == node or neighbour[1] == node]
-            
+
             for neighbour in neighbours:
                 if neighbour not in marked:
                     queue.appendleft(neighbour)
@@ -94,7 +101,7 @@ class SimulatedAnnealingSteiner:
 
     def initialize(self):
         ''' Creates `self.number_of_initial_trees` trees and chooses best of them to be `self.current_best`.
-        
+
         return: None
         '''
         potential_trees = [self.create_initial_tree() for _ in range(self.number_of_initial_trees)]
@@ -107,7 +114,7 @@ class SimulatedAnnealingSteiner:
             if temp_fitness > tree_fitness:
                 temp_tree = tree
                 temp_fitness = tree_fitness
-            
+
         self.current_best = temp_tree
         self.current_fitness = temp_fitness
 
@@ -130,7 +137,7 @@ class SimulatedAnnealingSteiner:
                 used_nodes.append(new_vertex[0])
                 used_nodes.append(new_vertex[1])
                 used_nodes = list(set(used_nodes))
-        
+
         return self.trim(initial_tree)
 
     def take_random_vertex(self, used_nodes):
@@ -146,14 +153,14 @@ class SimulatedAnnealingSteiner:
         ''' For given list of nodes returns list of vertexes that are next to them.
 
         param: used_nodes - list of ints
-        return: list of tuples [(int, int, int), ...] 
+        return: list of tuples [(int, int, int), ...]
         '''
         retval = []
         for vertex in self.graph:
             if vertex[0] in used_nodes or vertex[1] in used_nodes:
                 retval.append(vertex)
         return retval
-            
+
     def find_new_similar(self):
         ''' For current best tree finds tree similar to it.
 
@@ -171,11 +178,11 @@ class SimulatedAnnealingSteiner:
         bridge_node = random.choice(unused_nodes)
 
         new_tree = [x for x in old_tree if x != victim_vertex]
-        
+
         bridge1 = self.find_vertex(node1, bridge_node)
         bridge2 = self.find_vertex(node2, bridge_node)
 
-        new_tree.append(bridge1)        
+        new_tree.append(bridge1)
         new_tree.append(bridge2)
 
         return new_tree
@@ -186,7 +193,7 @@ class SimulatedAnnealingSteiner:
         return: tuple (int, int, int)
         '''
         return [
-            vertex for vertex in self.graph if 
+            vertex for vertex in self.graph if
                 (vertex[0] == node1 and vertex[1] == node2)
                 or
                 (vertex[0] == node2 and vertex[1] == node1)
@@ -243,15 +250,15 @@ class SimulatedAnnealingSteiner:
                     node_dict[node2] += 1
                 else:
                     node_dict[node2] = 1
-            
+
             excess_vertexes = [
-                vertex for vertex in new_tree 
-                    if (node_dict[vertex[0]] == 1 and vertex[0] not in self.steiner_nodes) 
+                vertex for vertex in new_tree
+                    if (node_dict[vertex[0]] == 1 and vertex[0] not in self.steiner_nodes)
                         or (node_dict[vertex[1]] == 1 and vertex[1] not in self.steiner_nodes)
             ]
             if len(excess_vertexes) == 0:
                 break
 
             new_tree = [vertex for vertex in tree if vertex not in excess_vertexes]
-        
+
         return new_tree
