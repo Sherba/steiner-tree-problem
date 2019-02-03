@@ -186,18 +186,3 @@ class SimulatedAnnealingSteiner:
             new_tree = [vertex for vertex in tree if vertex not in excess_vertexes]
         
         return new_tree
-
-            
-
-if __name__ == "__main__":
-    graph = [(a, b, 1) for a in range(15) for b in range(15) if a < b]
-    st = [1, 2, 4, 6, 8]
-    solver = SimulatedAnnealingSteiner(graph, st)
-    print("Steiner tree:")
-    print(solver.simulated_annealing())
-
-    # test_g = [(1,2,3), (2,3,4), (2,4,4), (1,5,3)]
-    # st = [1,3]
-
-    # t = SimulatedAnnealingSteiner(test_g, st)
-    # print(t.trim(test_g))
