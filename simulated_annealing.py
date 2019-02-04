@@ -9,9 +9,9 @@ class SimulatedAnnealingSteiner:
         self.current_fitness = 0            # fitnes of currenty best tree
 
         self.iterations = 0                 # iteration counter
-        self.iterations_limit = 100         # limit for iterations ( exit condition )
-        self.number_of_initial_trees = 3    # number of initial trees
-        self.trim_iterations = 5            # number of cycles in `trim`
+        self.iterations_limit = 20000        # limit for iterations ( exit condition )
+        self.number_of_initial_trees = 50    # number of initial trees
+        self.trim_iterations = 5           # number of cycles in `trim`
 
     def simulated_annealing(self):
         ''' Main function.
