@@ -9,9 +9,9 @@ class SimulatedAnnealingSteiner:
         self.current_fitness = 0            # fitnes of currenty best tree
 
         self.iterations = 0                 # iteration counter
-        self.iterations_limit = 20000        # limit for iterations ( exit condition )
+        self.iterations_limit = 5000        # limit for iterations ( exit condition )
         self.number_of_initial_trees = 50    # number of initial trees
-        self.trim_iterations = 5           # number of cycles in `trim`
+        self.trim_iterations = 10           # number of cycles in `trim`
 
     def simulated_annealing(self):
         ''' Main function.
@@ -21,13 +21,13 @@ class SimulatedAnnealingSteiner:
         self.initialize()
 
         while not self.condition():
-            current_similar = self.trim(self.find_new_similar())
+            current_similar = self.find_new_similar()
             fitness_similar = self.fitness(current_similar)
             if fitness_similar < self.current_fitness:
                 self.current_best = current_similar
                 self.current_fitness = fitness_similar
             elif self.iterations > 1:
-                p = 1.0 / pow(self.iterations, 0.5)
+                p = 1.0 / (self.iterations ** 3)
                 q = random.random()
                 if p > q:
                     self.current_best = current_similar
@@ -129,6 +129,9 @@ class SimulatedAnnealingSteiner:
 
         while self.has_unused_steiner_nodes(initial_tree):
             new_vertex = self.take_random_vertex(used_nodes)
+            if new_vertex in initial_tree:
+                continue
+
             initial_tree.append(new_vertex)
 
             if self.has_cycle(initial_tree):
