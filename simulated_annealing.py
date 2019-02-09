@@ -30,7 +30,6 @@ class SimulatedAnnealingSteiner:
                 p = 1.0 / (self.iterations)
                 q = random.random()
                 if p > q:
-                    print("desilo se")
                     self.current_best = current_similar
                     self.current_fitness = fitness_similar
 
