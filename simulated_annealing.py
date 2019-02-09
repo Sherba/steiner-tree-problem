@@ -10,7 +10,7 @@ class SimulatedAnnealingSteiner:
 
         self.iterations = 0                 # iteration counter
         self.iterations_limit = 5000        # limit for iterations ( exit condition )
-        self.number_of_initial_trees = 50    # number of initial trees
+        self.number_of_initial_trees = 50   # number of initial trees
         self.trim_iterations = 10           # number of cycles in `trim`
 
     def simulated_annealing(self):
@@ -26,10 +26,11 @@ class SimulatedAnnealingSteiner:
             if fitness_similar < self.current_fitness:
                 self.current_best = current_similar
                 self.current_fitness = fitness_similar
-            elif self.iterations > 1:
-                p = 1.0 / (self.iterations ** 3)
+            elif self.iterations > 1 and fitness_similar < 1.4 * self.current_fitness:
+                p = 1.0 / (self.iterations)
                 q = random.random()
                 if p > q:
+                    print("desilo se")
                     self.current_best = current_similar
                     self.current_fitness = fitness_similar
 
