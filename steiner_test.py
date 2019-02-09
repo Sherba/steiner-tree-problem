@@ -7,11 +7,16 @@ def make_simple_graph(n):
 
 if __name__ == "__main__":
     a = []
-    n = 20
-    number_of_steiner = 7
-    for _ in range(30):
-        solver = SimulatedAnnealingSteiner(make_simple_graph(n), [1, 4, 7, 8, 11, 14,18])
-        a.append(solver.simulated_annealing()[1])
+    n = 10
+    number_of_steiner = 4
+    solver = SimulatedAnnealingSteiner(make_simple_graph(n), [1, 3, 6, 9])
+
+    for _ in range(150):
+        result = solver.simulated_annealing()    
+        a.append(result[1])
+        # if result is imposible print the tree
+        if result[1] < number_of_steiner-1:
+            print(result[0])
         # print( solver.simulated_annealing() )
 
     print("Dobijene vrednosti za {} cvorova i {} stajnerova cvora".format(n, number_of_steiner))
